@@ -18,16 +18,7 @@
     <form method="get">
       <label for="host">Host</label>
       <input type="text" name="host"/>
-      <label for="department">Department</label>
-      <input name="department"/>
-      <label for="location">Location</label>
-      <input name="location"/>
-      <label for="showtitle">show title</label>
-      <input name="showtitle"/>
-
       <p><input type="submit" value="Enter"/></p>
     </form>
-
-
 
 [% INCLUDE 'intranet-bottom.inc' %]
