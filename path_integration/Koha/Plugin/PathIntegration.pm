@@ -29,11 +29,7 @@ sub new {
     return $self;
 }
 
-#create wagnerpath
-
-#configurio or reae path
-
-#sub install_not {
+#sub install {
 #    my $table = $self->get_qualified_table_name('wagnerguidepath');
 #
 #    return C4::Context->dbh->do( "
@@ -45,14 +41,10 @@ sub new {
 #            `shelf` VARCHAR( 255 ),
 #        ) ENGINE = INNODB;
 #    " );     
-#t}
+#}
 
 sub tool {
     my ( $self, $args ) = @_;
-
-    my $cgi = $self->{'cgi'};
-
-    # Here return code which let configuraion of wagnerpath
 
     my $cgi = $self->{'cgi'};
 
@@ -61,9 +53,9 @@ sub tool {
     print $cgi->header();
     print $template->output();
 
-    # $self->output_html("<h1>hej</h1>")
 }
 
+#generate link
 sub opac_js {
     my ( $self ) = @_;
     my $cgi = $self->{'cgi'};
