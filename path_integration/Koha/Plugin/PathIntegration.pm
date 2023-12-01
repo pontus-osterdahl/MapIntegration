@@ -1,4 +1,4 @@
-package Koha::Plugin::NewPlugin10;
+package Koha::Plugin::PathIntegration;
 
 use Modern::Perl;
 
@@ -7,14 +7,14 @@ use base qw(Koha::Plugins::Base);
 our $VERSION = "0.1";
 
 our $metadata = {
-    name            => 'Plugin_new5',
-    author          => 'Plugin_new5',
-    date_authored   => '2021-03-09',
-    date_updated    => "2021-03-09",
+    name            => 'Path_Integration',
+    author          => 'Pontus Österdahl',
+    date_authored   => '2023-12-01',
+    date_updated    => "2023-12-01",
     minimum_version => '19.05.00.000',
     maximum_version => undef,
     version         => $VERSION,
-    description     => 'this plugin adds zomething',
+    description     => 'this plugin is test',
 };
 
 sub new {
