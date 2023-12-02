@@ -17,8 +17,9 @@
 
     <form method="get">
       <label for="host">Host</label>
-      <input type="text" name="host"/>
-      <p><input type="submit" value="Enter"/></p>
+      <input type="text" name="host">[% host %]</input>
+      <input type="hidden" name="save" value="1" />
+      <p><input type="submit" value="save"/></p>
     </form>
 
 [% INCLUDE 'intranet-bottom.inc' %]
