@@ -43,7 +43,7 @@ sub new {
 #    " );     
 #}
 
-sub tool {
+sub configure {
     my ( $self, $args ) = @_;
 
     my $cgi = $self->{'cgi'};
