@@ -16,9 +16,12 @@
     <p>This tool is a simple test.</p>
 
     <form method="get">
+      <input type="hidden" name="class" value="[% CLASS %]"/>
+      <input type="hidden" name="method" value="[% METHOD %]"/>
       <label for="host">Host</label>
-      <input type="text" name="host"/>
-      <p><input type="submit" value="Enter"/></p>
+      <input type="text" name="host">[% path_host %]</input>
+      <input type="hidden" name="save" value="1" />
+      <p><input type="submit" value="Save configuration"/></p>
     </form>
 
 [% INCLUDE 'intranet-bottom.inc' %]

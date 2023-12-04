@@ -29,33 +29,32 @@ sub new {
     return $self;
 }
 
-#sub install {
-#    my $table = $self->get_qualified_table_name('wagnerguidepath');
-#
-#    return C4::Context->dbh->do( "
-#        CREATE TABLE IF NOT EXISTS $table (
-#            `id` INT(1) NOT NULL AUTO_INCREMENT,
-#            `librarypath` VARCHAR( 255 ) NOT NULL,
-#            `department` ` VARCHAR( 255 ),
-#            `location` ` VARCHAR( 255 ),
-#            `shelf` VARCHAR( 255 ),
-#        ) ENGINE = INNODB;
-#    " );     
-#}
-
 sub configure {
     my ( $self, $args ) = @_;
 
     my $cgi = $self->{'cgi'};
 
-    my $template = $self->get_template( { file => 'configure.tt' } );
+    unless ( $cgi->param('save')) {
 
-    print $cgi->header();
-    print $template->output();
+        my $template = $self->get_template( { file => 'configure.tt' } );
 
+        ## Grab value if exist
+        $template->param(
+            path_host => $self->retrieve_data('path_host'),
+        );
+
+        return $self->output_html( $template->output() );
+    }
+    else {
+        $self->store_data(
+            {
+                path_host => $cgi->param('host')
+            }
+        );
+        $self->go_home();
+    }
 }
 
-#generate link
 sub opac_js {
     my ( $self ) = @_;
     my $cgi = $self->{'cgi'};
