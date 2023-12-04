@@ -3,7 +3,6 @@ package Koha::Plugin::PathIntegration;
 use Modern::Perl;
 
 use base qw(Koha::Plugins::Base);
-#use Koha::Biblios;
 
 our $VERSION = "0.1";
 
