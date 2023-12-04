@@ -3,6 +3,7 @@ package Koha::Plugin::PathIntegration;
 use Modern::Perl;
 
 use base qw(Koha::Plugins::Base);
+#use Koha::Biblios;
 
 our $VERSION = "0.1";
 
@@ -40,16 +41,15 @@ sub configure {
 
         ## Grab value if exist
         $template->param(
-            host => $self->retrieve_data('host'),
+            path_host => $self->retrieve_data('path_host'),
         );
 
-        print $cgi->header();
-        print $template->output();
+        return $self->output_html( $template->output() );
     }
     else {
         $self->store_data(
             {
-                host => $cgi->param('host'),
+                path_host => $cgi->param('host')
             }
         );
         $self->go_home();
@@ -61,6 +61,8 @@ sub opac_js {
     my $cgi = $self->{'cgi'};
     
     my $lite = "hej_new";
+
+    # how do we ow what item is preopac_detail_xslt_variablesented
 
      my $js = "<script>  console.log(" . $lite . ");</script>";
 
