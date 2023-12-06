@@ -11,7 +11,7 @@ our $VERSION = "0.1";
 
 our $metadata = {
     name            => 'Map Integration',
-    author          => 'imcode.com',
+    author          => 'imCode.com',
     date_authored   => '2023-12-01',
     date_updated    => "2023-12-06",
     minimum_version => '19.05.00.000',
