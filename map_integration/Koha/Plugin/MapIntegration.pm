@@ -1,20 +1,23 @@
-package Koha::Plugin::PathIntegration;
+package Koha::Plugin::MapIntegration;
 
 use Modern::Perl;
+use Koha::Biblios;
+use Koha::Items;
+use Koha::Item;
 
 use base qw(Koha::Plugins::Base);
 
 our $VERSION = "0.1";
 
 our $metadata = {
-    name            => 'Path_Integration',
-    author          => 'Pontus Österdahl',
+    name            => 'Map Integration',
+    author          => 'imcode.com',
     date_authored   => '2023-12-01',
-    date_updated    => "2023-12-01",
+    date_updated    => "2023-12-06",
     minimum_version => '19.05.00.000',
     maximum_version => undef,
     version         => $VERSION,
-    description     => 'this plugin is test',
+    description     => 'This plugin integrates maps.',
 };
 
 sub new {
@@ -55,17 +58,41 @@ sub configure {
     }
 }
 
+sub create_path {
+    my ( $self, $item ) = @_;
+
+     my $host = $self->retrieve_data('path_host');
+     my $ccode = $item->ccode;
+     my $location = $item->location;
+     my $callno = $item->itemcallnumber;
+
+     my $text = $host . "?department=" . $ccode . "?location=" . $location . "?shelf=" . $callno;
+
+     return $text;
+
+}
+
 sub opac_js {
     my ( $self ) = @_;
     my $cgi = $self->{'cgi'};
+
+    my $biblionumber = $cgi->param('biblionumber');
+
+    my $biblio = Koha::Biblios->find($biblionumber);
+
+    my $items = Koha::Items->search( { biblionumber => $biblionumber });
+
+    #currently first item to log only
+    while (my $item = $items->next) {
+
+        my $conte = $self->create_path($item);
+        my $js = "<script>  console.log('" . $conte . "');</script>";
+
+        return $js;
     
-    my $lite = "hej_new";
+    }
 
-    # how do we ow what item is preopac_detail_xslt_variablesented
 
-     my $js = "<script>  console.log(" . $lite . ");</script>";
-
-    return $js;
 }
 
 1;
