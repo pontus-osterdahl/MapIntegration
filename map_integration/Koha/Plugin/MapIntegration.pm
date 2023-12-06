@@ -66,7 +66,7 @@ sub create_path {
      my $location = $item->location;
      my $callno = $item->itemcallnumber;
 
-     my $text = $host . "?department=" . $ccode . "?location=" . $location . "?shelf=" . $callno;
+     my $text = $host . "?department=" . $ccode . "&location=" . $location . "&shelf=" . $callno;
 
      return $text;
 
