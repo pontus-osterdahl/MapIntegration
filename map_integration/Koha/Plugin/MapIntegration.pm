@@ -75,6 +75,9 @@ sub create_path {
 sub opac_js {
     my ( $self ) = @_;
     my $cgi = $self->{'cgi'};
+    my $script_name = $cgi->script_name;
+
+    if ($script_name =~ /opac-detail\.pl/) {
 
     my $biblionumber = $cgi->param('biblionumber');
 
@@ -82,16 +85,20 @@ sub opac_js {
 
     my $items = Koha::Items->search( { biblionumber => $biblionumber });
 
-    #currently first item to log only
+    #currently only link for item 1
+
     while (my $item = $items->next) {
 
         my $conte = $self->create_path($item);
-        my $js = "<script>  console.log('" . $conte . "');</script>";
+        my $js = "<script>  
+        \$( '<a href=\"" . $conte . "\">Find in library</a>' ).insertAfter( '#catalogue_detail_biblio' ); 
+        </script>";
 
         return $js;
     
     }
 
+    }
 
 }
 
