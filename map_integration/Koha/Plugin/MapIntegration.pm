@@ -85,23 +85,6 @@ sub opac_js {
 
     my $items = Koha::Items->search( { biblionumber => $biblionumber });
 
-    #currently only link for item 1
-
-    if ($items == 1) {
-
-      while (my $item = $items->next) {
-
-        my $conte = $self->create_path($item);
-        my $js = "<script>  
-        \$( '<a href=\"" . $conte . "\">Find in library</a>' ).insertAfter( '#catalogue_detail_biblio' ); 
-        </script>";
-
-        return $js;
-    
-      }
-    }
-    else {
-
       my $js = "<script>";
 
       while (my $item = $items->next) {
@@ -110,14 +93,11 @@ sub opac_js {
         
         my $conte = $self->create_path($item);
         
-        my $path = $callno;
-        
-        $js .= "\$( '<a href=\"" . $conte . "\">Find " . $path . " in library</a><br/>' ).insertAfter( '#catalogue_detail_biblio' );"; 
+        $js .= "\$( '<a href=\"" . $conte . "\">See shelf " . $callno . " on map</a><br/>' ).insertAfter( '#catalogue_detail_biblio' );"; 
  
       }
 
       $js .= "</script>";
-    }
     
     }
 }
