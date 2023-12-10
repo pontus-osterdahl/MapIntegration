@@ -87,7 +87,9 @@ sub opac_js {
 
     #currently only link for item 1
 
-    while (my $item = $items->next) {
+    if ($items == 1) {
+
+      while (my $item = $items->next) {
 
         my $conte = $self->create_path($item);
         my $js = "<script>  
@@ -96,10 +98,28 @@ sub opac_js {
 
         return $js;
     
+      }
     }
+    else {
 
+      my $js = "<script>";
+
+      while (my $item = $items->next) {
+      
+        my $callno = $item->itemcallnumber;
+        
+        my $conte = $self->create_path($item);
+        
+        my $path = $callno;
+        
+        $js .= "\$( '<a href=\"" . $conte . "\">Find " . $path . " in library</a><br/>' ).insertAfter( '#catalogue_detail_biblio' );"; 
+ 
+      }
+
+      $js .= "</script>";
     }
-
+    
+    }
 }
 
 1;
