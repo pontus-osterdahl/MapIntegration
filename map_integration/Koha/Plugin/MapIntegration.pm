@@ -1,4 +1,4 @@
-package Koha::Plugin::MapIntegration21;
+package Koha::Plugin::MapIntegration;
 
 use Modern::Perl;
 use Koha::Biblios;
@@ -10,7 +10,7 @@ use base qw(Koha::Plugins::Base);
 our $VERSION = "0.1";
 
 our $metadata = {
-    name            => 'Map Integration 21',
+    name            => 'Map Integration',
     author          => 'imCode.com',
     date_authored   => '2023-12-01',
     date_updated    => "2023-12-07",
