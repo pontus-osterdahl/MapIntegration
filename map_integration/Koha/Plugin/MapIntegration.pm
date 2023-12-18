@@ -1,4 +1,4 @@
-package Koha::Plugin::MapIntegration;
+package Koha::Plugin::MapIntegration21;
 
 use Modern::Perl;
 use Koha::Biblios;
@@ -10,7 +10,7 @@ use base qw(Koha::Plugins::Base);
 our $VERSION = "0.1";
 
 our $metadata = {
-    name            => 'Map Integration',
+    name            => 'Map Integration 21',
     author          => 'imCode.com',
     date_authored   => '2023-12-01',
     date_updated    => "2023-12-07",
@@ -85,20 +85,34 @@ sub opac_js {
 
     my $items = Koha::Items->search( { biblionumber => $biblionumber });
 
-      my $js = "<script>";
+    my $js = "<script> const item_paths = [];";
 
       while (my $item = $items->next) {
-      
-        my $callno = $item->itemcallnumber;
-        
+
         my $conte = $self->create_path($item);
+        $js .= "item_paths.push(\"" . $conte . "\");";     
         
-        $js .= "\$( '<a href=\"" . $conte . "\">See shelf " . $callno . " on map</a><br/>' ).insertAfter( '#catalogue_detail_biblio' );"; 
- 
       }
 
-      $js .= "</script>";
-    
+    $js .= <<'JS'; 
+
+    var title = $(".title").text();
+
+    $('#holdingst').find("tbody").find("tr").each(function(index) { 
+    var t = $(this).find(".call_no").text();
+    var b = $.trim(t).split(' ');
+    var shelf = b[0];  
+    var wagnerGuidePath = item_paths[index];
+    var callNoTd = $(this).find(".call_no");
+    $(callNoTd).append("<a href=\"" + wagnerGuidePath + "\">" + " Locate this Book" + "</a>");
+    });
+
+JS
+
+    $js .= "</script>";
+
+    return $js;
+
     }
 }
 
