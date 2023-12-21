@@ -1,5 +1,6 @@
 package Koha::Plugin::MapIntegration;
 
+use C4::Languages;
 use Modern::Perl;
 use Koha::Biblios;
 use Koha::Items;
@@ -7,7 +8,7 @@ use Koha::Item;
 
 use base qw(Koha::Plugins::Base);
 
-our $VERSION = "0.1";
+our $VERSION = "0.1.1";
 
 our $metadata = {
     name            => 'Map Integration',
@@ -79,6 +80,13 @@ sub opac_js {
 
     if ($script_name =~ /opac-detail\.pl/) {
 
+    my $language = C4::Languages::getlanguage();
+
+    my $shelf = "Locate shelf";
+    if ($language eq "sv-SE") {
+        $shelf = "Hitta till hyllan";
+    }
+
     my $biblionumber = $cgi->param('biblionumber');
 
     my $biblio = Koha::Biblios->find($biblionumber);
@@ -86,6 +94,7 @@ sub opac_js {
     my $items = Koha::Items->search( { biblionumber => $biblionumber });
 
     my $js = "<script> const item_paths = [];";
+    $js .= "var prompt = \"" . $shelf . "\";";
 
       while (my $item = $items->next) {
 
@@ -104,7 +113,7 @@ sub opac_js {
     var shelf = b[0];  
     var wagnerGuidePath = item_paths[index];
     var callNoTd = $(this).find(".call_no");
-    $(callNoTd).append("<a href=\"" + wagnerGuidePath + "\">" + " Locate this Book" + "</a>");
+    $(callNoTd).append("<a href=\"" + wagnerGuidePath + "\">" + prompt + "</a>");
     });
 
 JS
