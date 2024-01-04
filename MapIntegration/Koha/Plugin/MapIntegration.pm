@@ -8,13 +8,13 @@ use Koha::Item;
 
 use base qw(Koha::Plugins::Base);
 
-our $VERSION = "0.1.1";
+our $VERSION = "0.1.2";
 
 our $metadata = {
     name            => 'Map Integration',
     author          => 'imCode.com',
     date_authored   => '2023-12-01',
-    date_updated    => "2023-12-07",
+    date_updated    => "2024-01-04",
     minimum_version => '19.05.00.000',
     maximum_version => undef,
     version         => $VERSION,
@@ -91,7 +91,9 @@ sub opac_js {
 
     my $biblio = Koha::Biblios->find($biblionumber);
 
-    my $items = Koha::Items->search( { biblionumber => $biblionumber });
+    my $items = $biblio->items->search_ordered;
+
+#    my $items = Koha::Items->search( { biblionumber => $biblionumber });
 
     $items = $items->filter_by_visible_in_opac();
 
