@@ -8,7 +8,7 @@ use Koha::Item;
 
 use base qw(Koha::Plugins::Base);
 
-our $VERSION = "0.1.2";
+our $VERSION = "0.1.1";
 
 our $metadata = {
     name            => 'Map Integration',
