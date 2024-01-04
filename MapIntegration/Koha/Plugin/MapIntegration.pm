@@ -93,6 +93,8 @@ sub opac_js {
 
     my $items = Koha::Items->search( { biblionumber => $biblionumber });
 
+    $items = $items->filter_by_visible_in_opac();
+
     my $js = "<script> const item_paths = [];";
     $js .= "var prompt = \"" . $shelf . "\";";
 
