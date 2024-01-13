@@ -2,9 +2,13 @@ package Koha::Plugin::MapIntegration;
 
 use C4::Languages;
 use Modern::Perl;
+use Koha::AuthorisedValues;
 use Koha::Biblios;
 use Koha::Items;
 use Koha::Item;
+
+use C4::Biblio qw(
+    GetBiblioData);
 
 use base qw(Koha::Plugins::Base);
 
@@ -15,7 +19,7 @@ our $metadata = {
     author          => 'imCode.com',
     date_authored   => '2023-12-01',
     date_updated    => "2024-01-04",
-    minimum_version => '19.05.00.000',
+    minimum_version => '21.11.00.000',
     maximum_version => undef,
     version         => $VERSION,
     description     => 'This plugin integrates maps.',
@@ -82,41 +86,71 @@ sub opac_js {
 
     my $language = C4::Languages::getlanguage();
 
-    my $shelf = "Locate shelf";
+    my $prompt = "Locate shelf";
     if ($language eq "sv-SE") {
-        $shelf = "Hitta till hyllan";
+        $prompt = "Hitta till hyllan";
     }
 
     my $biblionumber = $cgi->param('biblionumber');
 
     my $biblio = Koha::Biblios->find($biblionumber);
 
-    my $items = $biblio->items->search_ordered;
+    my $items = Koha::Items->search( { biblionumber => $biblionumber });
 
-    $items = $items->filter_by_visible_in_opac();
+    my $dat = &GetBiblioData($biblionumber);
+
+    my $shelflocations =
+  { map { $_->{authorised_value} => $_->{opac_description} } Koha::AuthorisedValues->get_descriptions_by_koha_field( { frameworkcode => $dat->{frameworkcode}, kohafield => 'items.location' } ) };
+my $collections =
+  { map { $_->{authorised_value} => $_->{opac_description} } Koha::AuthorisedValues->get_descriptions_by_koha_field( { frameworkcode => $dat->{frameworkcode}, kohafield => 'items.ccode' } ) };
+my $copynumbers =
+  { map { $_->{authorised_value} => $_->{opac_description} } Koha::AuthorisedValues->get_descriptions_by_koha_field( { frameworkcode => $dat->{frameworkcode}, kohafield => 'items.copynumber' } ) };
+
 
     my $js = "<script> const item_paths = [];";
-    $js .= "var prompt = \"" . $shelf . "\";";
+    my $host = $self->retrieve_data('path_host');
+    $js .= "var host = \"" . $host . "\";";
+    $js .= "var prompt = \"" . $prompt . "\";";
+    $js .= "var collections = {};";
+    $js .= "var locations = {};";
 
       while (my $item = $items->next) {
-
-        my $conte = $self->create_path($item);
-        $js .= "item_paths.push(\"" . $conte . "\");";     
         
-      }
+            if (defined $item->ccode && $item->ccode ne "") {
+            $js .= "collections[\"" . $collections->{$item->ccode} . "\"] = \"" . $item->ccode . "\";";  
+            } 
+            if (defined $item->location && $item->location ne "" ) {
+            $js .= "locations[\"" . $shelflocations->{$item->location} . "\"] = \"" . $item->location . "\";";  
+        }     
+}
+        
+      
+
 
     $js .= <<'JS'; 
 
-    var title = $(".title").text();
+        $('#holdingst').find("tbody").find("tr").each(function(index) {
 
-    $('#holdingst').find("tbody").find("tr").each(function(index) { 
-    var t = $(this).find(".call_no").text();
-    var b = $.trim(t).split(' ');
-    var shelf = b[0];  
-    var wagnerGuidePath = item_paths[index];
-    var callNoTd = $(this).find(".call_no");
-    $(callNoTd).append("<a href=\"" + wagnerGuidePath + "\">" + prompt + "</a>");
-    });
+          var collectionDesc = $(this).find(".collection").text();
+          var shelvingLocationspan = $(this).find(".shelving_location").find(".shelvingloc");
+          var shelvingLocation = $(shelvingLocationspan).text();
+
+          var callNoTd = $(this).find(".call_no");
+
+          var t = $(callNoTd).text();
+
+          var b = $.trim(t).split(' ');
+
+          var shelf = b[0];
+
+          
+          var location = shelvingLocation in locations ? locations[shelvingLocation] : "";
+          var ccode = collectionDesc in collections ? collections[collectionDesc] : "";
+
+          var wagnerGuidePath = host + "?department=" + ccode + "&location=" + location + "&shelf=" + shelf;
+
+          $(callNoTd).append("<a href=\"" + wagnerGuidePath + "\">" + prompt + "</a>");
+          });
 
 JS
 
