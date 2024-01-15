@@ -12,17 +12,17 @@ use C4::Biblio qw(
 
 use base qw(Koha::Plugins::Base);
 
-our $VERSION = "0.1.2";
+our $VERSION = "0.1.3";
 
 our $metadata = {
     name            => 'Map Integration',
     author          => 'imCode.com',
     date_authored   => '2023-12-01',
-    date_updated    => "2024-01-04",
+    date_updated    => "2024-01-15",
     minimum_version => '21.11.00.000',
     maximum_version => undef,
     version         => $VERSION,
-    description     => 'This plugin integrates maps.',
+    description     => 'This plugin integrates map links for items.',
 };
 
 sub new {
@@ -63,20 +63,6 @@ sub configure {
     }
 }
 
-sub create_path {
-    my ( $self, $item ) = @_;
-
-     my $host = $self->retrieve_data('path_host');
-     my $ccode = $item->ccode;
-     my $location = $item->location;
-     my $callno = $item->itemcallnumber;
-
-     my $text = $host . "?department=" . $ccode . "&location=" . $location . "&shelf=" . $callno;
-
-     return $text;
-
-}
-
 sub opac_js {
     my ( $self ) = @_;
     my $cgi = $self->{'cgi'};
@@ -99,13 +85,11 @@ sub opac_js {
 
     my $dat = &GetBiblioData($biblionumber);
 
+    #inspired by opac-detail.pl
     my $shelflocations =
-  { map { $_->{authorised_value} => $_->{opac_description} } Koha::AuthorisedValues->get_descriptions_by_koha_field( { frameworkcode => $dat->{frameworkcode}, kohafield => 'items.location' } ) };
-my $collections =
-  { map { $_->{authorised_value} => $_->{opac_description} } Koha::AuthorisedValues->get_descriptions_by_koha_field( { frameworkcode => $dat->{frameworkcode}, kohafield => 'items.ccode' } ) };
-my $copynumbers =
-  { map { $_->{authorised_value} => $_->{opac_description} } Koha::AuthorisedValues->get_descriptions_by_koha_field( { frameworkcode => $dat->{frameworkcode}, kohafield => 'items.copynumber' } ) };
-
+    { map { $_->{authorised_value} => $_->{opac_description} } Koha::AuthorisedValues->get_descriptions_by_koha_field( { frameworkcode => $dat->{frameworkcode}, kohafield => 'items.location' } ) };
+    my $collections =
+    { map { $_->{authorised_value} => $_->{opac_description} } Koha::AuthorisedValues->get_descriptions_by_koha_field( { frameworkcode => $dat->{frameworkcode}, kohafield => 'items.ccode' } ) };
 
     my $js = "<script> const item_paths = [];";
     my $host = $self->retrieve_data('path_host');
@@ -142,7 +126,6 @@ my $copynumbers =
           var b = $.trim(t).split(' ');
 
           var shelf = b[0];
-
           
           var location = shelvingLocation in locations ? locations[shelvingLocation] : "";
           var ccode = collectionDesc in collections ? collections[collectionDesc] : "";
